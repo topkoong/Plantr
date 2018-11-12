@@ -29,12 +29,19 @@ app.get('/', (req, res) =>{
 })
 
 const addToDb = () =>{
-    Gardener.create({})
-        .then(gardener => {
-            return Vegetable.create({
-                gardnerId: gardener.id
-            })
-        })
+    // Promise.all([
+    //     Plot.create({}),
+    //     Plot.create({})
+    // ])
+   
+    // Gardener.create({})
+    //     .then(gardener => {
+    //         return Vegetable.create({
+    //             gardnerId: gardener.id
+    //         })
+    //     })
+
+    Gardener.create({name: 'David Morgan', age: 15})
 
 
     Vegetable.create({name: 'tomato', color: 'red', planted_on: Date.now()})
