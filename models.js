@@ -64,7 +64,7 @@ Plot.belongsToMany(Vegetable, {
 })
 
 
-// a Gardener being part of a Vegetable with the foreign key on the Vegetable called favoritevegetable.
+// a Gardener being part of a Vegetable with the foreign key on the Gardener called favoritevegetable.
 Gardener.belongsTo(Vegetable, {
     as: 'favoriteVegetable'
 })
