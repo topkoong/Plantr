@@ -1,51 +1,77 @@
 const Sequelize = require('sequelize');
-const db = new Sequelize('postgres://localhost:5432/plantr',{
+const db = new Sequelize('postgres://localhost:5432/plantr', {
     logging: false
 });
 const Gardener = db.define("gardener", {
-    name:{
+    name: {
         type: Sequelize.STRING,
         allowNull: false
     },
-    age:{
+    age: {
         type: Sequelize.INTEGER,
         allowNull: false
     }
 });
 const Plot = db.define("plot", {
-    size:{
+    size: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    shaded:{
+    shaded: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     }
 });
 const Vegetable = db.define("vegetable", {
-    name:{
+    name: {
         type: Sequelize.STRING,
         allowNull: false
     },
-    color:{
+    color: {
         type: Sequelize.STRING,
         allowNull: false
     },
-    planted_on:{
+    planted_on: {
         type: Sequelize.DATE,
         allowNull: false
     }
 });
 
-Plot.belongsTo(Gardener);
+// a Plot being part of a Gardener with the foreign key on the Plot.
+Plot.belongsTo(Gardener); // Will add a gardenerId attribute to Plot to hold the primary key value for Plot
+
+
+// One-way associations
+// hasOne will add an attribute gardenerId to the Plot model!
 Gardener.hasOne(Plot);
-Vegetable.belongsToMany(Plot, {through: 'vegetable_plot'});
-Plot.belongsToMany(Vegetable, {through: 'vegetable_plot'});
-Gardener.belongsTo(Vegetable, {as: 'favorite_vegetable'});
+
+
+/*This will create a new model called vegetable_plot
+ with the equivalent foreign keys vegetableId and plotId. 
+*/
+Vegetable.belongsToMany(Plot, {
+    through: 'vegetable_plot'
+})
+
+
+/*This will create a new model called vegetable_plot
+ with the equivalent foreign keys vegetableId and plotId. 
+*/
+
+
+Plot.belongsToMany(Vegetable, {
+    through: 'vegetable_plot'
+})
+
+
+// a Gardener being part of a Vegetable with the foreign key on the Vegetable called favoritevegetable.
+Gardener.belongsTo(Vegetable, {
+    as: 'favoriteVegetable'
+})
 
 
 
-module.exports ={
+module.exports = {
     db,
     Gardener,
     Vegetable,

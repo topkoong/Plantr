@@ -1,4 +1,4 @@
-const {db, Vegetable, Gardener, Plot} = require('./models');
+const { db, Vegetable, Gardener, Plot } = require('./models');
 const express = require('express');
 const app = express();
 
@@ -6,19 +6,20 @@ const app = express();
 const PORT = 3000;
 
 
-const init = () =>{
-    db.sync({force: true})
-    .then(() => {
-        console.log("Database Synced!")
+const init = () => {
+    db
+    .sync()
+    .then(result => {
+        console.log("Database synced!");
+        app.listen(PORT, () =>{
+            console.log(`USING ${PORT}`);
+        })
     })
     .catch((err) => {
         console.log(err);
     })
     .finally(()=>{
         db.close();
-    })
-    app.listen(PORT, () =>{
-        console.log(`USING ${PORT}`);
     })
 }
 
@@ -28,30 +29,35 @@ app.get('/', (req, res) =>{
     res.send('This page is working!');
 })
 
-const addToDb = () =>{
-    // Promise.all([
-    //     Plot.create({}),
-    //     Plot.create({})
-    // ])
-   
-    // Gardener.create({})
-    //     .then(gardener => {
-    //         return Vegetable.create({
-    //             gardnerId: gardener.id
-    //         })
-    //     })
-
-    Gardener.create({name: 'David Morgan', age: 15})
-
-
-    Vegetable.create({name: 'tomato', color: 'red', planted_on: Date.now()})
-    .then(veg =>{
-        // return veg.create({name: veg.name, color: veg.color, planted_on: veg.planted_on})
-        return 
+const addToDb = () => {
+    const vegetableData = { name: 'tomato', color: 'red', planted_on: Date.now() }
+    console.log('Created Vegetable');
+    Vegetable.create(vegetableData)
+    .then(tomato => {
+        console.log('Created Gardener');
+        console.log('Added an attribute favoriteVegetableId (the foreign key to the Vegetable table) to Gardener model');
+        return Gardener.create({ name: 'David Morgan', age: 15, favoriteVegetableId: tomato.id });
     })
-    .then((veg)=>{
-        console.log("vegetable created", veg);
+    .then(gardener => {
+        console.log('Created Plot');
+        console.log('Added an attribute gardenerId to the Plot model');
+        return Plot.create({size: 10, shaded: false, gardenerId: gardener.id });
     })
+    .then(plot => {
+        // IIFEs - Immediately Invoked Function Expressions
+        (() => {
+            console.log('Find an attribute gardenerId from Gardener model')
+            return Gardener.findById(plot.gardenerId)
+        })()
+        .then(gardener => {
+            console.log('Find an attribute favoriteVegetableId from Vegetable model')
+            return Vegetable.findById(gardener.favoriteVegetableId);
+        })
+        .then(vegetable => {
+            console.log('Added an attribute plotId to Vegetable model')
+            vegetable.addPlot(plot);
+        });
+    });
 }
 
 addToDb();
