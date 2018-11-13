@@ -38,7 +38,7 @@ const Vegetable = db.define("vegetable", {
 });
 
 // a Plot being part of a Gardener with the foreign key on the Plot.
-Plot.belongsTo(Gardener); // Will add a gardenerId attribute to Plot to hold the primary key value for Plot
+Plot.belongsTo(Gardener); // Will add a gardenerId attribute to Plot to hold the primary key value for Gardener
 
 
 // One-way associations
